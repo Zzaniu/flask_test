@@ -1,0 +1,4 @@
+亲爱的 {{ user.username }},
+欢迎来到 Flask_test_2!
+你已经注册成功，附件是福利，Flask祝您接下来每一天的生活都愉快~
+{{ url_for('auth.login') }}

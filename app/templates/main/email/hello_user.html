@@ -1,0 +1,5 @@
+<p>亲爱的 {{ user.username }},</p>
+<p>欢迎来到 <b>Flask_test_2</b>!</p>
+<p>你已经注册成功，附件是福利，Flask祝您接下来每一天的生活都愉快~</p>
+{#_external=True表示生成绝对网址，包含IP端口号#}
+{{ url_for('auth.login', _external=True) }}

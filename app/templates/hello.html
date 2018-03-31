@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flask_test_2{% endblock %}
+{% block page_content %}
+<div class="page-header">
+    {% if current_user.is_authenticated %}
+{#      current_user 由Flask-Login 定义,且在视图函数和模板中自动可用,
+        这个变量的值是当前登录的用户.如果用户尚未登录，则是一个匿名用户代理对象,
+        如果是匿名用户，is_authenticated() 方法返回False
+        所以这个方法可用来判断当前用户是否已经登录#}
+        <h3>Hi,{{ current_user.username }},欢迎来到Flask世界</h3>
+    {% else %}
+        <h3>Flask世界有你更精彩，欢迎登录</h3>
+    {% endif %}
+</div>
+{% endblock %}
