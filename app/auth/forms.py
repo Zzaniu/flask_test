@@ -40,14 +40,14 @@ class RegistrationForm(FlaskForm):
         DataRequired(message=u'请输入一个有效数字！'),
         Length(8, 30, message=u'密码限制在8-30字符之间')
     ])
-    age = IntegerField(u'你的年龄？', validators=[
-        DataRequired(message=u'请输入一个有效数字！'),
-        # 如果输入数字不在范围内，则弹出message
-        NumberRange(18, 100, u'请输入18~100以内的数字！')])
+    # age = IntegerField(u'你的年龄？', validators=[
+    #     DataRequired(message=u'请输入一个有效数字！'),
+    #     # 如果输入数字不在范围内，则弹出message
+    #     NumberRange(18, 100, u'请输入18~100以内的数字！')])
     # choices中的元组里面的值可以为字符串，不能为数字，否则form.validate_on_submit()一直未false
     # 且form.errors中报错Not a valid choice
-    users = RadioField(u'用户组', choices=[
-        ('0', 'admin'), ('1', 'User')], default='0')
+    # users = RadioField(u'用户组', choices=[
+    #     ('0', 'admin'), ('1', 'User')], default='0')
     # language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'),\
     #                                  ('text', 'Plain Text')])
     email = StringField(u'请输入邮箱', validators=[
@@ -117,3 +117,11 @@ class ChangeEmailRequestForm(FlaskForm):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError(u'该邮箱已被注册')
+
+
+
+
+
+
+
+

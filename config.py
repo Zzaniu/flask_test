@@ -9,8 +9,12 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
     FLASKY_MAIL_SENDER = os.environ.get('MAIL_USERNAME')
+    FLASKY_MAIL_ADMIN = os.environ.get('FLASKY_ADMIN')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # 启用缓慢查询记录功能
+    SQLALCHEMY_RECORD_QUERIES = True
+    FLASKY_SLOW_DB_QUERY_TIME = 0.5
 
     @staticmethod
     def init_app(app):

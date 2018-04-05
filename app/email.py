@@ -15,6 +15,7 @@ def send_async_email(app, msg):
 
 
 def send_email(email, subject, template, **kwargs):
+    # current_app:程序上下文，当前激活程序的程序实例
     app = current_app._get_current_object()
     msg = Message(subject='Flask-' + subject,\
                   # sender=os.environ.get('MAIL_USERNAME'),\

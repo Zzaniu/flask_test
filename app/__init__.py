@@ -1,7 +1,7 @@
 # coding=utf8
 
 
-from flask import Flask, render_template
+from flask import Flask
 # 用于末班
 from flask_bootstrap import Bootstrap
 # 用于email
@@ -12,10 +12,13 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 from flask_login import LoginManager
+# PageDown:使用JavaScript实现的客户端Markdown 到HTML 的转换程序
+from flask_pagedown import PageDown
 bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
+pagedown = PageDown()
 
 
 login_manager = LoginManager()
@@ -37,6 +40,7 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    pagedown.init_app(app)
 
     # 导入蓝本
     from .main import main as main_blueprint
@@ -46,5 +50,8 @@ def create_app(config_name):
     from .auth import auth as auth_blueprint
     # url_prefix参数：定义的路由需加上这个前缀
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    from .api_1_0 import api as api_1_0_blueprint
+    app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 
     return app

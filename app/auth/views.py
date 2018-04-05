@@ -3,12 +3,14 @@
 
 from flask import render_template, redirect, request, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
+
+from app.decorators import admin_required, permission_required
 from . import auth
 from .forms import LoginForm, ChangePasswordForm, ResetPasswordForm, ResetPasswordRequestForm, ChangeEmailRequestForm
-from ..models import User, Role
-from .. import db
 from .forms import RegistrationForm
+from .. import db
 from ..email import send_email
+from ..models import User, Permission
 
 
 @auth.route('/login', methods=['POST', 'GET'])
@@ -45,12 +47,9 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        role = Role.query.all()
         user = User(username=form.username.data,
-                    age=form.age.data,
                     email=form.email.data,
-                    password=form.password.data,
-                    role=role[int(form.users.data)])
+                    password=form.password.data)
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token(900)
@@ -73,23 +72,25 @@ def confirm(token):
     return redirect(url_for('main.hello'))
 
 
-# 钩子函数，拦截请求
+# 钩子函数，拦截请求。即使在蓝本之外
 @auth.before_app_request
 def before_request():
+    if current_user.is_authenticated:
+        current_user.ping()
     # 用户已经登录、用户未激活、请求的端点（使用request.endpoint 获取）不在认证蓝本中
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
-            and request.endpoint[:5] != 'auth.'\
-            and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+        if not current_user.confirmed \
+                and request.endpoint \
+                and request.blueprint != 'auth' \
+                and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 
-# 只有已经登录，但是没有激活的用户才可以访问这个链接
+# 已经登录，但是没有激活的用户返回请求激活链接，未登录用户和已激活用户首页
 @auth.route('/unconfirmed')
 def unconfirmed():
     # current_user.is_anonymous:匿名用户返回True
     if current_user.is_anonymous or current_user.confirmed:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.hello'))
     return render_template('auth/unconfirmed.html')
 
 
@@ -176,3 +177,34 @@ def change_email(token):
     else:
         flash(u'无效的请求.')
     return redirect(url_for('main.hello'))
+
+
+@auth.route('/admin')
+@login_required
+@admin_required
+def only_admin():
+    return 'for admin'
+
+
+@auth.route('/moderator')
+@login_required
+@permission_required(Permission.MODERATE)
+def for_moderators_only():
+    return "For comment moderators!"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
